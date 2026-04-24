@@ -72,3 +72,96 @@ zinit snippet 'https://raw.githubusercontent.com/ftzahao/zsh/main/dev-init.zsh'
 # 别名配置
 zinit snippet 'https://raw.githubusercontent.com/ftzahao/zsh/main/alias.zsh'
 ```
+
+## brew 安装的工具
+
+```zsh
+brew install bash container ffmpeg git mise mole python-build ruby-build sevenzip starship swift-format zinit
+
+brew install --cask adguard betterdisplay cleanmymac cleanshot coteditor crossover downie firefox font-maple-mono-nf-cn font-new-york font-sf-mono github-copilot-for-xcode google-chrome jetbrains-toolbox keka launchos ogdesign-eagle parallels permute pixelsnap popclip proxyman qlmarkdown qq sf-symbols stash syntax-highlight tablepro tencent-meeting typora visual-studio-code wechat wechatwebdevtools wechatwork zed@preview
+```
+
+## .config/mise/config.toml
+
+```toml
+redactions = ["*_TOKEN", "*_API_KEY"]
+
+[tools]
+aube = { version = "latest", postinstall = "aube completion zsh > $ZSH_COMPLETION_DIR/_aube" }
+bat = { version = "latest", postinstall = "bat --completion zsh > $ZSH_COMPLETION_DIR/_bat" }
+bun = { version = "latest", postinstall = "bun completions zsh > $ZSH_COMPLETION_DIR/_bun" }
+"cargo:cargo-cache" = "latest"
+"cargo:lsd" = "latest"
+"cargo:miniserve" = { version = "latest", postinstall = "miniserve --print-completions zsh > $ZSH_COMPLETION_DIR/_miniserve" }
+cocoapods = "latest"
+deno = { version = "latest", postinstall = "deno completions zsh > $ZSH_COMPLETION_DIR/_deno" }
+dust = "latest"
+fd = { version = "latest", postinstall = "fd --gen-completions zsh > $ZSH_COMPLETION_DIR/_fd" }
+gh = { version = "latest", postinstall = "gh completion -s zsh > $ZSH_COMPLETION_DIR/_gh" }
+go = "latest"
+java = "latest"
+node = { version = "latest", postinstall = "npm completion > $ZSH_COMPLETION_DIR/_npm" }
+"npm:@github/copilot" = "latest"
+"npm:@vscode/vsce" = "latest"
+"npm:npkill" = "latest"
+"npm:nrm" = "latest"
+pkl = { version = "latest", postinstall = "pkl shell-completion zsh > $ZSH_COMPLETION_DIR/_pkl" }
+pnpm = { version = "latest", postinstall = "pnpm completion zsh > $ZSH_COMPLETION_DIR/_pnpm" }
+python = { version = "latest", postinstall = "pip completion --zsh > $ZSH_COMPLETION_DIR/_pip" }
+rg = { version = "latest", postinstall = "rg --generate complete-zsh > $ZSH_COMPLETION_DIR/_rg" }
+ruby = "latest"
+rust = "latest"
+tokei = "latest"
+usage = { version = "latest", postinstall = "usage --completions zsh > $ZSH_COMPLETION_DIR/_usage" }
+uv = { version = "latest", postinstall = "uv generate-shell-completion zsh > $ZSH_COMPLETION_DIR/_uv" }
+vp = "latest"
+watchexec = { version = "latest", postinstall = "watchexec --completions zsh > $ZSH_COMPLETION_DIR/_watchexec" }
+yarn = "latest"
+zig = "latest"
+
+[settings]
+idiomatic_version_file_enable_tools = ["node", "python", "ruby", "go", "java"]
+lockfile = true
+auto_install = false
+experimental = true
+python.uv_venv_auto = "source"
+
+[env]
+ZSH_COMPLETION_DIR = "{{env.HOME}}/.local/share/zsh/site-functions"
+
+[tasks.generate-completions]
+description = "生成所有常用工具的zsh补全"
+run = '''
+#!/usr/bin/env zsh
+set -euo pipefail
+
+# 清理旧的补全文件，避免过期或冲突
+rm -f -- $ZSH_COMPLETION_DIR/_* 2>/dev/null || true
+
+echo "🔄 生成所有工具的zsh补全..."
+
+# ==================== 以下是所有工具的 completion ====================
+[ -x "$(command -v aube)" ] && aube completion zsh > "$ZSH_COMPLETION_DIR/_aube" 2>/dev/null || true
+[ -x "$(command -v bat)" ] && bat --completion zsh > "$ZSH_COMPLETION_DIR/_bat" 2>/dev/null || true
+[ -x "$(command -v bun)" ] && bun completions zsh > "$ZSH_COMPLETION_DIR/_bun" 2>/dev/null || true
+[ -x "$(command -v miniserve)" ] && mise x miniserve -- miniserve --print-completions zsh > "$ZSH_COMPLETION_DIR/_miniserve" 2>/dev/null || true
+[ -x "$(command -v deno)" ] && deno completions zsh > "$ZSH_COMPLETION_DIR/_deno" 2>/dev/null || true
+[ -x "$(command -v fd)" ] && fd --gen-completions zsh > "$ZSH_COMPLETION_DIR/_fd" 2>/dev/null || true
+[ -x "$(command -v gh)" ] && gh completion -s zsh > "$ZSH_COMPLETION_DIR/_gh" 2>/dev/null || true
+[ -x "$(command -v npm)" ] && npm completion > "$ZSH_COMPLETION_DIR/_npm" 2>/dev/null || true
+[ -x "$(command -v pkl)" ] && mise x pkl -- pkl shell-completion zsh > "$ZSH_COMPLETION_DIR/_pkl" 2>/dev/null || true
+[ -x "$(command -v pnpm)" ] && pnpm completion zsh > "$ZSH_COMPLETION_DIR/_pnpm" 2>/dev/null || true
+[ -x "$(command -v pip)" ] && pip completion --zsh > "$ZSH_COMPLETION_DIR/_pip" 2>/dev/null || true
+[ -x "$(command -v rg)" ] && mise x rg -- rg --generate complete-zsh > "$ZSH_COMPLETION_DIR/_rg" 2>/dev/null || true
+[ -x "$(command -v usage)" ] && mise x usage -- usage --completions zsh > "$ZSH_COMPLETION_DIR/_usage" 2>/dev/null || true
+[ -x "$(command -v uv)" ] && mise x uv -- uv generate-shell-completion zsh > "$ZSH_COMPLETION_DIR/_uv" 2>/dev/null || true
+[ -x "$(command -v watchexec)" ] && mise x watchexec -- watchexec --completions zsh > "$ZSH_COMPLETION_DIR/_watchexec" 2>/dev/null || true
+# [ -x "$(command -v pitchfork)" ] && mise x pitchfork -- pitchfork completion zsh > "$ZSH_COMPLETION_DIR/_pitchfork" 2>/dev/null || true
+
+echo "✅ 所有补全内容已生成至 $ZSH_COMPLETION_DIR"
+# autoload -Uz compinit; compinit
+'''
+
+[hooks]
+postinstall = "mise run generate-completions"
+```
