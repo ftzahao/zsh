@@ -100,6 +100,7 @@ fd = { version = "latest", postinstall = "fd --gen-completions zsh > $ZSH_COMPLE
 gh = { version = "latest", postinstall = "gh completion -s zsh > $ZSH_COMPLETION_DIR/_gh" }
 go = "latest"
 java = "latest"
+mkcert = "latest"
 node = { version = "latest", postinstall = "npm completion > $ZSH_COMPLETION_DIR/_npm" }
 "npm:@github/copilot" = "latest"
 "npm:@vscode/vsce" = "latest"
